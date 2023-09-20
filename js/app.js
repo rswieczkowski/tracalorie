@@ -10,6 +10,7 @@ class CalorieTracker {
     this._displayCaloriesConsumed();
     this._displayCaloriesBurned();
     this._displayCaloriesRemaining();
+    this._displayCaloriesProgress();
   }
 
   // Public methods/API //
@@ -63,6 +64,36 @@ class CalorieTracker {
 
     const caloriesRemaining = this._calorieLimit - this._totalCalories;
     caloriesRemainingEl.innerHTML = caloriesRemaining;
+
+    if (caloriesRemaining <= 0) {
+      caloriesRemainingEl.parentElement.parentElement.classList.remove(
+        'bg-light'
+      );
+      caloriesRemainingEl.parentElement.parentElement.classList.add(
+        'bg-danger'
+      );
+    } else {
+      caloriesRemainingEl.parentElement.parentElement.classList.remove(
+        'bg-danger'
+      );
+      caloriesRemainingEl.parentElement.parentElement.classList.add('bg-light');
+    }
+  }
+
+  _displayCaloriesProgress() {
+    const progressEl = document.getElementById('calorie-progress');
+    const percentage = (this._totalCalories / this._calorieLimit) * 100;
+
+    const width = Math.min(percentage, 100);
+
+    progressEl.style.width = `${width}%`;
+    if (width === 100) {
+      progressEl.classList.remove('bg-success');
+      progressEl.classList.add('bg-danger');
+    } else {
+      progressEl.classList.remove('bg-danger');
+      progressEl.classList.add('bg-success');
+    }
   }
 
   _render() {
@@ -70,6 +101,7 @@ class CalorieTracker {
     this._displayCaloriesConsumed();
     this._displayCaloriesBurned();
     this._displayCaloriesRemaining();
+    this._displayCaloriesProgress();
   }
 }
 
@@ -94,7 +126,7 @@ const tracker = new CalorieTracker();
 // Meals
 const breakfast = new Meal('Breakfast', 400);
 const lunch = new Meal('Lunch', 200);
-const dinner = new Meal('Dinner', 600);
+const dinner = new Meal('Dinner', 400);
 tracker.addMeal(breakfast);
 tracker.addMeal(lunch);
 tracker.addMeal(dinner);
@@ -102,5 +134,7 @@ tracker.addMeal(dinner);
 // Workouts
 const run = new Workout('Morning Run', 300);
 const pushups = new Workout('Evening push ups', 200);
+const crossfit = new Workout('Crossfit training', 500);
 tracker.addWorkout(run);
+tracker.addWorkout(crossfit);
 tracker.addWorkout(pushups);
