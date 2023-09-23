@@ -121,20 +121,64 @@ class Workout {
   }
 }
 
-const tracker = new CalorieTracker();
+class App {
+  constructor() {
+    this._calorieTracker = new CalorieTracker();
+    document
+      .getElementById('meal-form')
+      .addEventListener('submit', this._newMeal.bind(this));
+    document
+      .getElementById('workout-form')
+      .addEventListener('submit', this._newWorkout.bind(this));
+  }
 
-// Meals
-const breakfast = new Meal('Breakfast', 400);
-const lunch = new Meal('Lunch', 200);
-const dinner = new Meal('Dinner', 400);
-tracker.addMeal(breakfast);
-tracker.addMeal(lunch);
-tracker.addMeal(dinner);
+  _newMeal(e) {
+    e.preventDefault();
+    const name = document.getElementById('meal-name');
+    const calories = document.getElementById('meal-calories');
 
-// Workouts
-const run = new Workout('Morning Run', 300);
-const pushups = new Workout('Evening push ups', 200);
-const crossfit = new Workout('Crossfit training', 500);
-tracker.addWorkout(run);
-tracker.addWorkout(crossfit);
-tracker.addWorkout(pushups);
+    this._validateInputs(name.value, calories.value);
+
+    const meal = new Meal(name.value, parseInt(calories.value));
+
+    this._calorieTracker.addMeal(meal);
+    name.value = '';
+    calories.value = '';
+
+    const collapseMeal = document.getElementById('collapse-meal');
+    new bootstrap.Collapse(collapseMeal, {
+      toggle: true,
+    });
+  }
+
+  _newWorkout(e) {
+    e.preventDefault();
+    const name = document.getElementById('workout-name');
+    const calories = document.getElementById('workout-calories');
+
+    this._validateInputs(name.value, calories.value);
+
+    const workout = new Workout(name.value, parseInt(calories.value));
+
+    this._calorieTracker.addWorkout(workout);
+    name.value = '';
+    calories.value = '';
+
+    const collapseWorkout = document.getElementById('collapse-workout');
+    new bootstrap.Collapse(collapseWorkout, {
+      toggle: true,
+    });
+  }
+
+  _validateInputs(name, calories) {
+    if (name === '') {
+      alert('Please fill the name');
+      return;
+    } else if (isNaN(calories)) {
+      alert('Please fill the number of calories');
+      return;
+    }
+  }
+}
+
+const app = new App();
