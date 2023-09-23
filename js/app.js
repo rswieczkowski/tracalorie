@@ -126,46 +126,32 @@ class App {
     this._calorieTracker = new CalorieTracker();
     document
       .getElementById('meal-form')
-      .addEventListener('submit', this._newMeal.bind(this));
+      .addEventListener('submit', this._newItem.bind(this, 'meal'));
     document
       .getElementById('workout-form')
-      .addEventListener('submit', this._newWorkout.bind(this));
+      .addEventListener('submit', this._newItem.bind(this, 'workout'));
   }
 
-  _newMeal(e) {
+  _newItem(type, e) {
     e.preventDefault();
-    const name = document.getElementById('meal-name');
-    const calories = document.getElementById('meal-calories');
+    const name = document.getElementById(`${type}-name`);
+    const calories = document.getElementById(`${type}-calories`);
 
     this._validateInputs(name.value, calories.value);
 
-    const meal = new Meal(name.value, parseInt(calories.value));
+    if (type === 'meal') {
+      const meal = new Meal(name.value, parseInt(calories.value));
+      this._calorieTracker.addMeal(meal);
+    } else if (type === 'workout') {
+      const workout = new Workout(name.value, parseInt(calories.value));
+      this._calorieTracker.addWorkout(workout);
+    }
 
-    this._calorieTracker.addMeal(meal);
     name.value = '';
     calories.value = '';
 
-    const collapseMeal = document.getElementById('collapse-meal');
-    new bootstrap.Collapse(collapseMeal, {
-      toggle: true,
-    });
-  }
-
-  _newWorkout(e) {
-    e.preventDefault();
-    const name = document.getElementById('workout-name');
-    const calories = document.getElementById('workout-calories');
-
-    this._validateInputs(name.value, calories.value);
-
-    const workout = new Workout(name.value, parseInt(calories.value));
-
-    this._calorieTracker.addWorkout(workout);
-    name.value = '';
-    calories.value = '';
-
-    const collapseWorkout = document.getElementById('collapse-workout');
-    new bootstrap.Collapse(collapseWorkout, {
+    const collapseItem = document.getElementById(`collapse-${type}`);
+    new bootstrap.Collapse(collapseItem, {
       toggle: true,
     });
   }
